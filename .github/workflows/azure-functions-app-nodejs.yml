@@ -56,16 +56,16 @@ jobs:
         npm run build --if-present
         npm run test --if-present
         Compress-Archive -Path * -DestinationPath ${{ env.OUTPUT_ZIP_PATH }}
-        
-    - name: Azure CLI Action
-      uses: Azure/cli@v2.1.0
-      with:
-        # Specify the script here
-        inlineScript: |
-          az functionapp deployment source config-zip -g <resource_group> -n ${{ env.AZURE_FUNCTIONAPP_NAME }} --src ${{ env.OUTPUT_ZIP_PATH }}
-        # Azure CLI version to be used to execute the script. If not provided, latest version is used
- #       azcliversion: # optional, default is agentazcliversion
-              
+    - name: Install azure-cli
+      # You may pin to the exact commit or the version.
+      # uses: pietrobolcato/install-azure-cli-action@9a10af1be5e3eb7931f48c0290364a131e7ecd70
+      uses: pietrobolcato/install-azure-cli-action@v1.0.1
+          
+    - name: 'Resolve Project Dependencies Using Npm'
+      shell: pwsh # For Linux, use bash
+      run: |
+          az functionapp deployment source config-zip -g ${{ env.AZURE_FUNCTIONAPP_RESOURCE_GROUP }} -n ${{ env.AZURE_FUNCTIONAPP_NAME }} --src ${{ env.OUTPUT_ZIP_PATH }}
+    
  #   - name: 'Run Azure Functions Action'
  #     uses: Azure/functions-action@v1
  #     id: fa
